@@ -120,7 +120,8 @@ def get_with_soa(domain, rdtype=None):
 
 
 for hostname in open(sys.argv[1]):
-    results = get_with_soa(dns.name.from_text(hostname.strip()))
+    hostname = hostname.strip()
+    results = get_with_soa(dns.name.from_text(hostname))
 
     unique_soas = set([(soa.serial, soa.refresh, soa.minimum) for ns, soa, answers in results])
     unique_as = set([tuple([(ttl, a.address) for ttl, a in answers if a.rdtype == dns.rdatatype.A])
