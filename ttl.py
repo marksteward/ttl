@@ -126,14 +126,18 @@ for hostname in open(sys.argv[1]):
     unique_soas = set([(soa.serial, soa.refresh, soa.minimum) for ns, soa, answers in results])
     unique_as = set([tuple([(ttl, a.address) for ttl, a in answers if a.rdtype == dns.rdatatype.A])
                      for ns, soa, answers in results])
+    unique_aaaas = set([tuple([(ttl, a.address) for ttl, a in answers if a.rdtype == dns.rdatatype.AAAA])
+                     for ns, soa, answers in results])
 
-    if len(unique_soas) == 1 and len(unique_as) == 1:
+    if len(unique_soas) == 1 and len(unique_as) <= 1 and len(unique_aaaas) <= 1:
         ns, soa, answers = results[0]
         print '%s: %s responded with serial %s refresh %s minimum %s' % (
               hostname, len(results), soa.serial, soa.refresh, soa.minimum)
 
         for ttl, answer in answers:
             if answer.rdtype == dns.rdatatype.A:
+                print '%s %s' % (ttl, answer.address)
+            elif answer.rdtype == dns.rdatatype.AAAA:
                 print '%s %s' % (ttl, answer.address)
 
     else:
@@ -143,5 +147,7 @@ for hostname in open(sys.argv[1]):
 
             for ttl, answer in answers:
                 if answer.rdtype == dns.rdatatype.A:
+                    print '%s %s' % (ttl, answer.address)
+                elif answer.rdtype == dns.rdatatype.AAAA:
                     print '%s %s' % (ttl, answer.address)
 
